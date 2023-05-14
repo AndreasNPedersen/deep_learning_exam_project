@@ -12,4 +12,4 @@ pandas==2.0.1
 torch==1.8.2
 torchvision==0.9.2
 torchaudio==0.8.2
-spacy
+spacy==3.5.2
