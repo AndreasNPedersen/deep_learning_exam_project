@@ -1,5 +1,8 @@
 # deep_learning_exam_project
 
+# code from kaggle
+https://www.kaggle.com/code/purvasingh/text-generation-via-rnn-and-lstms-pytorch/notebook
+
 # how to install used version of pytorch
 this version of pytorch comes very close to the version used in the book "Machine Learning with PyTorch and Scikit-Learn"
 
