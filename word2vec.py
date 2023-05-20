@@ -8,6 +8,9 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import torchtext as tt
 import spacy
+import time
+from datetime import datetime
+import re
 
 
 dtype = torch.FloatTensor
@@ -18,7 +21,9 @@ dtype = torch.FloatTensor
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 sentences = ''
 play = False
-print(f'training started on {device}')
+
+start_time = datetime.fromtimestamp(time.time())
+print(f'<{start_time}> training started on {device}')
 
 if play:
     sentences = [ "i like dog", "i like cat", "i like animal", 
@@ -31,19 +36,41 @@ else:
     tokenizer = tt.data.utils.get_tokenizer('spacy')
     np_array = df['text'].values
     txt_array = np_array.tolist()
-    sentences = '\n'.join(txt_array)
+    sentences = '\n'.join(txt_array[0:10000])
+    sentences = sentences.lower()
 
+number_match = re.compile('\b.*[0-9].*\b')
+punctuation_match = re.compile('\b.*(\.|\\|\/|,\/|\(|\)).*\b')
+match_all = re.compile('\b.*![a-z].*\b')
 
+print(sentences[0:100])
+for sentence in sentences:
+    match_all.sub(repl="",string=sentence)
+    # sentence = number_match.sub(repl="", string=sentence)
+    # sentence = punctuation_match.sub(repl="", string=sentence)
 
+print(sentences[0:100])
+print(f'number of articles: {len(txt_array)}')
+print(f'length of sentences: {len(sentences)}')
 
 
 # list all the words present in our corpus
-word_sequence = " ".join(sentences).split()
-# print(word_sequence )
-# build the vocabulary
+word_sequence = tokenizer(sentences)
 word_list = list(set(word_sequence))
-# print(word_list)
+
+print(f'{len(word_list)} unique tokens')
+
+# word_list = [word for word in word_list if not number_match.match(word)]
+# print(f'{len(word_list)} unique tokens after removing numbers')
+# word_list = [word for word in word_list if not punctuation_match.match(word)]
+# print(f'{len(word_list)} unique tokens after removing special characters')
+
+
+# print(word_sequence)
+# build the vocabulary
+print(f'final length of word list: {len(word_list)}')
 word_dict = {w: i for i, w in enumerate(word_list)}
+
 # print(word_dict)
 
 # Word2Vec Parameter
@@ -64,17 +91,17 @@ voc_size = len(word_list)
 
 # %%
 # Make skip gram of one size window
+window_size = 2
 skip_grams = []
-for i in range(1, len(word_sequence) - 1):
+for i in range(1, len(word_sequence) - window_size):
     input = word_dict[word_sequence[i]]
-    context = [word_dict[word_sequence[i - 1]], word_dict[word_sequence[i + 1]]]
-
+    context = [word_dict[word_sequence[i - window_size]], word_dict[word_sequence[i + window_size]]]
     for w in context:
         skip_grams.append([input, w])
 
 
 #lets plot some data
-skip_grams[:6]
+# skip_grams[:6]
 
 # %%
 np.random.seed(172)
@@ -91,7 +118,7 @@ def random_batch(data, size):
 
     return random_inputs, random_labels
 
-random_batch(skip_grams[:6], size=3)
+# random_batch(skip_grams[:6], size=3)
 
 # inputs: like , i, dog , context: i, dog, i
 
@@ -120,7 +147,8 @@ optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 # %%
 # Training
-epochs = 5000
+epochs = 1
+print_freq = (epochs // 20) or 1
 
 for epoch in range(epochs):
 
@@ -135,8 +163,9 @@ for epoch in range(epochs):
 
     # output : [batch_size, voc_size], target_batch : [batch_size] (LongTensor, not one-hot)
     loss = criterion(output, target_batch)
-    if (epoch + 1)%1000 == 0:
-        print('Epoch:', '%04d' % (epoch + 1), 'cost =', '{:.6f}'.format(loss))
+    if (epoch + 1)%print_freq == 0:
+        epoch_time = datetime.fromtimestamp(time.time())
+        print('<', epoch_time, '> Epoch:', '%04d' % (epoch + 1), 'cost =', '{:.6f}'.format(loss))
 
     loss.backward()
     optimizer.step()
@@ -147,9 +176,11 @@ W, _= model.parameters()
 print(W.detach())
 
 # %%
-torch.save(model.state_dict(), './models/word2vec.model')
+file_path = f'./models/w2v_wsize_{window_size}_epocs_{epochs}.model'
+torch.save(model.state_dict(), file_path)
 
-
+end_time = datetime.fromtimestamp(time.time())
+print(f'training finished at: {end_time}')
 
 # %%
 # for i, word in enumerate(word_list):
