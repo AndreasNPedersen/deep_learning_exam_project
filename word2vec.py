@@ -74,7 +74,7 @@ word_dict = {w: i for i, w in enumerate(word_list)}
 # print(word_dict)
 
 # Word2Vec Parameter
-batch_size = 20  # To show 2 dim embedding graph
+batch_size = 10  # To show 2 dim embedding graph
 embedding_size = 2  # To show 2 dim embedding graph
 voc_size = len(word_list)
 

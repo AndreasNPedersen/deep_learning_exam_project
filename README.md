@@ -10,7 +10,8 @@ https://towardsdatascience.com/skip-gram-neural-network-from-scratch-485f2e68823
 this version of pytorch comes very close to the version used in the book "Machine Learning with PyTorch and Scikit-Learn"
 
 #
-pip3 install torch==1.8.2 torchvision==0.9.2 torchaudio==0.8.2 --extra-index-url https://download.pytorch.org/whl/lts/1.8/cu111
+
+pip3 install torch==1.8.2 torchvision==0.9.2 torchaudio==0.8.2 --extra-index-url https://download.pytorch.org/whl/lts/1.8/cu118
 
 
 # versions used
@@ -19,3 +20,4 @@ torch==1.8.2
 torchvision==0.9.2
 torchaudio==0.8.2
 spacy==3.5.2
+torchtext==0.9.1
