@@ -1,4 +1,8 @@
 # deep_learning_exam_project
+notebook file to be considered: LSTM_textgenerator.ipynb
+
+everything else is just for documenting the process from ideas to prototypes to product
+
 
 # code from kaggle
 https://www.kaggle.com/code/purvasingh/text-generation-via-rnn-and-lstms-pytorch/notebook
